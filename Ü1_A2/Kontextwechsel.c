@@ -3,9 +3,9 @@
 #include <unistd.h>
 #include <time.h>
 
-#define ITERATIONS 1000000  // Anzahl der Kontextwechsel
+#define ITERATIONS 1000000 
 
-int pipe_fd[2];  // Pipe: 0 = read end, 1 = write end
+int pipe_fd[2];  
 
 void* thread_function(void* arg) {
     char buffer;
@@ -35,7 +35,6 @@ int main() {
         return 1;
     }
 
-    // Zeitmessung starten
     clock_gettime(CLOCK_MONOTONIC, &start);
 
     for (int i = 0; i < ITERATIONS; i++) {
@@ -45,19 +44,15 @@ int main() {
         read(pipe_fd[0], &buffer, 1);
     }
 
-    // Zeitmessung beenden
     clock_gettime(CLOCK_MONOTONIC, &end);
-
-    // Warten auf Thread-Abschluss
     pthread_join(thread, NULL);
 
-    // Pipe schließen
     close(pipe_fd[0]);
     close(pipe_fd[1]);
 
     // Zeit in Nanosekunden berechnen
     long total_time_ns = (end.tv_sec - start.tv_sec) * 1000000000L + (end.tv_nsec - start.tv_nsec);
-    double avg_context_switch_time = total_time_ns / (double)(2 * ITERATIONS); // 2 Wechsel pro Iteration
+    double avg_context_switch_time = total_time_ns / (double)(2 * ITERATIONS);
 
     printf("Durchschnittliche Kontextwechselzeit: %.2f ns\n", avg_context_switch_time);
     return 0;
